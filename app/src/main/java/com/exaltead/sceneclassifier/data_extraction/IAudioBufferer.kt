@@ -10,5 +10,5 @@ interface IAudioBufferer {
 
     /// If the system is feeding data, try to call the callback at most every elapsed second.
     /// Time between each call might take longer than the minimum time.
-    fun subscribeToElapsedTime(callback:()-> Unit, minimumTime: Double = 0.5)
+    fun subscribeToElapsedTime(callback:(List<Double>)-> Unit, minimumTime: Double = 0.5)
 }
