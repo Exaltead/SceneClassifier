@@ -1,8 +1,8 @@
 package com.exaltead.sceneclassifier.classification
 
-class TensorflowISceneClassifier : ISceneClassifier {
-    override fun subscribeToClassification(callback: (probabilities: List<Float>) -> Unit) {
-        TODO("not implemented")
+class TensorflowSceneClassifier : ISceneClassifier {
+    override fun getCurrentClassification(): DoubleArray {
+        return DoubleArray(10, {_ -> Math.random()})
     }
 
 }
