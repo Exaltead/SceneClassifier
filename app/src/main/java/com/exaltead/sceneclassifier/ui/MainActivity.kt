@@ -1,7 +1,8 @@
-package com.exaltead.sceneclassifier
+package com.exaltead.sceneclassifier.ui
 
 import android.app.Activity
 import android.os.Bundle
+import com.exaltead.sceneclassifier.R
 
 class MainActivity : Activity() {
 
