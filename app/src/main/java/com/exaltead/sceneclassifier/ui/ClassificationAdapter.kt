@@ -8,10 +8,10 @@ import android.widget.ArrayAdapter
 import com.exaltead.sceneclassifier.R
 import kotlinx.android.synthetic.main.classification_view.view.*
 
-class ClassificationAdapter(context: Context, resource: Int): ArrayAdapter<Double>(context, resource){
+class ClassificationAdapter(context: Context, resource: Int, items: Array<Double>):
+        ArrayAdapter<Double>(context, resource, items){
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view: View
-        view = if (convertView == null){
+        val view: View = if (convertView == null){
             LayoutInflater.from(context)
                     .inflate(R.layout.classification_view, parent, false)
         }else{
