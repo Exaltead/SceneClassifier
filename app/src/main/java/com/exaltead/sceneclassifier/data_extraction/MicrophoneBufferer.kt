@@ -18,7 +18,7 @@ class MicrophoneBufferer : IAudioBufferer {
         audioRecorder = AudioRecord(MediaRecorder.AudioSource.MIC, samplingRate,
                 CHANNEL_IN_MONO, ENCODING_PCM_8BIT, minBufferSize)
     }
-    override fun takeShortAudioRecord(duration: Float): ShortArray {
+    override fun takeShortAudioRecord(duration: Double): ShortArray {
         //TODO: Implement
         val samplinRate = audioRecorder.sampleRate
         val requiredArrayLength = duration * samplinRate
