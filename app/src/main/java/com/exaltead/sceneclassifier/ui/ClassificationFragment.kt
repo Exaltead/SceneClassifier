@@ -1,27 +1,30 @@
 package com.exaltead.sceneclassifier.ui
 
-import android.app.Fragment
+import android.arch.lifecycle.Observer
 import android.os.Bundle
+import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import com.exaltead.sceneclassifier.R
 import com.exaltead.sceneclassifier.classification.ClassifiationService
-import kotlinx.android.synthetic.main.activity_main.*
+import com.exaltead.sceneclassifier.classification.ClassificationResult
 import kotlinx.android.synthetic.main.classification_fragment.view.*
 
 
 class ClassificationFragment: Fragment() {
 
     private lateinit var service: ClassifiationService
-
+    private lateinit var adapter: ArrayAdapter<ClassificationResult>
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val parentActivity = this.activity as MainActivity
         service = parentActivity.getClassificationService()!!
         val view =  inflater!!.inflate(R.layout.classification_fragment, container, false)
-
-        view.classifications.adapter = ClassificationAdapter(this.context,
+        adapter = ClassificationAdapter(this.context,
                 R.layout.classification_view,service.classifications.value)
+        view.classifications.adapter = adapter
+        service.classifications.observe(this, Observer { _ -> adapter.notifyDataSetChanged() } )
         return view
     }
 

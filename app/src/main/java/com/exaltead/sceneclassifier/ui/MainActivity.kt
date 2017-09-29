@@ -7,16 +7,17 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.util.Log
 import com.exaltead.sceneclassifier.R
 import com.exaltead.sceneclassifier.classification.ClassifiationService
 import com.exaltead.sceneclassifier.classification.ClassifierServiceConncetion
-import kotlinx.android.synthetic.main.activity_main.*
+
 private const val TAG = "MainActivity"
 private const val RECORD_AUDIO_CODE = 300
 
-class MainActivity : Activity() {
+class MainActivity : FragmentActivity() {
 
     private val connection: ClassifierServiceConncetion = ClassifierServiceConncetion(this)
     var infoText = ""
@@ -42,8 +43,9 @@ class MainActivity : Activity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
-        if(requestCode == RECORD_AUDIO_CODE && grantResults?.size == 1
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if(requestCode == RECORD_AUDIO_CODE && grantResults.size == 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
             Log.i(TAG, "Permission granted")
             attemptBindClassificationService(this, connection)
@@ -87,13 +89,13 @@ class MainActivity : Activity() {
     }
 }
 
-private fun startClassificationFragment(activity: Activity){
-    activity.fragmentManager.beginTransaction()
+private fun startClassificationFragment(activity: FragmentActivity){
+    activity.supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container, ClassificationFragment())
             .commit()
 }
-private fun startInfoFragment(activity: Activity){
-    activity.fragmentManager.beginTransaction()
+private fun startInfoFragment(activity: FragmentActivity){
+    activity.supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container, InformationFragment())
             .commit()
 }

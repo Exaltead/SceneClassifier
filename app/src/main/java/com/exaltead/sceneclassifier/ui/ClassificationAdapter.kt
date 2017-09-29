@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.classification_view.view.*
 
 class ClassificationAdapter(context: Context, resource: Int, items: List<ClassificationResult>?):
         ArrayAdapter<ClassificationResult>(context, resource, items){
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View = if (convertView == null){
             LayoutInflater.from(context)
