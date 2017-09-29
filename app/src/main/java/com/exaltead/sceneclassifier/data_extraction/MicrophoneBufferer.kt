@@ -11,7 +11,7 @@ class MicrophoneBufferer : IAudioBufferer {
 
     private val audioRecorder: AudioRecord
     init {
-        val minBufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE_UNSPECIFIED, CHANNEL_IN_MONO,
+        val minBufferSize = AudioRecord.getMinBufferSize(samplingRate, CHANNEL_IN_MONO,
                 ENCODING_PCM_FLOAT)
         Log.i("AudioRecorder", "min buffer size "+ minBufferSize.toString())
         // Use bigger buffer if needed
