@@ -16,7 +16,7 @@ class ClassifierBinder(val service: ClassifiationService): Binder()
 
 
 class ClassifiationService : Service(){
-    lateinit var classifications: MutableLiveData<List<ClassificationResult>>
+    var classifications: MutableLiveData<List<ClassificationResult>> = MutableLiveData()
     private lateinit var classifier: SceneClassifier
     private val localBinder  = ClassifierBinder(this)
 

@@ -17,7 +17,7 @@ class ClassificationFragment: Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val parentActivity = this.activity as MainActivity
-        service = parentActivity.getClassificationService()
+        service = parentActivity.getClassificationService()!!
         val view =  inflater!!.inflate(R.layout.classification_fragment, container, false)
 
         view.classifications.adapter = ClassificationAdapter(this.context,

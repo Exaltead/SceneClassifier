@@ -18,16 +18,18 @@ private const val RECORD_AUDIO_CODE = 300
 
 class MainActivity : Activity() {
 
-    private val connection: ClassifierServiceConncetion = ClassifierServiceConncetion()
+    private val connection: ClassifierServiceConncetion = ClassifierServiceConncetion(this)
+    var infoText = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        startInfoFragment(this)
     }
 
     override fun onStart() {
         super.onStart()
         if(checkAndRequestPermission()){
-            activateClassificationWithFragment(this, connection)
+            attemptBindClassificationService(this, connection)
         }
         // SHOW ERROR DIALOG / FRAGMENT
 
@@ -44,11 +46,11 @@ class MainActivity : Activity() {
         if(requestCode == RECORD_AUDIO_CODE && grantResults?.size == 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
             Log.i(TAG, "Permission granted")
-            activateClassificationWithFragment(this, connection)
+            attemptBindClassificationService(this, connection)
         }
         else{
             Log.w(TAG, "Permission not granted")
-            // SHOW ERROR
+            infoText = resources.getString(R.string.missing_permission)
         }
     }
 
@@ -72,15 +74,27 @@ class MainActivity : Activity() {
     fun getClassificationService(): ClassifiationService?{
         return connection.binder?.service
     }
+
+    fun notifyServiceReady(){
+        startClassificationFragment(this)
+    }
+    private fun attemptBindClassificationService(activity: Activity, connection: ClassifierServiceConncetion){
+        infoText = resources.getString(R.string.binding_service)
+        when (activity.bindService(Intent(activity, ClassifiationService::class.java), connection, Context.BIND_AUTO_CREATE)){
+            true -> Log.i(TAG, "Service successfully bound")
+            false -> Log.i(TAG, "Binding service failed")
+        }
+    }
 }
 
-private fun activateClassificationWithFragment(activity: Activity, connection: ClassifierServiceConncetion){
-    activity.bindService(Intent(activity, ClassifiationService::class.java), connection, Context.BIND_AUTO_CREATE)
-    startClassificationFragment(activity)
-}
 private fun startClassificationFragment(activity: Activity){
     activity.fragmentManager.beginTransaction()
             .add(R.id.fragment_container, ClassificationFragment())
+            .commit()
+}
+private fun startInfoFragment(activity: Activity){
+    activity.fragmentManager.beginTransaction()
+            .add(R.id.fragment_container, InformationFragment())
             .commit()
 }
 
