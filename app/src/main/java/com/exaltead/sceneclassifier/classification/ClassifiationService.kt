@@ -10,19 +10,32 @@ import com.exaltead.sceneclassifier.data_extraction.IAudioBufferer
 import com.exaltead.sceneclassifier.data_extraction.IFeatureExtractor
 import com.exaltead.sceneclassifier.data_extraction.MfccFeatureExtractor
 import com.exaltead.sceneclassifier.data_extraction.MicrophoneBufferer
+import java.util.*
 
 data class ClassificationResult(val label: String, val result: Double)
 class ClassifierBinder(val service: ClassifiationService): Binder()
 
+private class UpdateTask(val service: ClassifiationService): TimerTask() {
+    override fun run() {
+        service.updateStatistics()
+    }
+}
 
+private const val UPDATE_FREQUENCY = 2000L // 2s
 class ClassifiationService : Service(){
     var classifications: MutableLiveData<List<ClassificationResult>> = MutableLiveData()
+    private var timer: Timer = Timer()
     private lateinit var classifier: SceneClassifier
     private val localBinder  = ClassifierBinder(this)
-
     override fun onBind(p0: Intent?): IBinder {
         Log.d("ClassificationService", "Service bound")
+        timer.scheduleAtFixedRate(UpdateTask(this), 0, UPDATE_FREQUENCY)
         return localBinder
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        timer.purge()
+        return super.onUnbind(intent)
     }
 
     override fun onCreate() {
@@ -30,8 +43,11 @@ class ClassifiationService : Service(){
         val audioBufferer: IAudioBufferer = MicrophoneBufferer()
         val extractor: IFeatureExtractor = MfccFeatureExtractor(audioBufferer)
         classifier = SceneClassifier(extractor)
-        classifications.value = List<ClassificationResult>(5,
-                {index -> ClassificationResult(index.toString(), Math.random()) })
+        classifications.value = classifier.getCurrentClassification()
+    }
+
+    fun updateStatistics(){
+        classifications.postValue(classifier.getCurrentClassification())
     }
 }
 

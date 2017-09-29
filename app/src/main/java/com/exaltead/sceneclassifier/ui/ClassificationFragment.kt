@@ -24,8 +24,14 @@ class ClassificationFragment: Fragment() {
         adapter = ClassificationAdapter(this.context,
                 R.layout.classification_view,service.classifications.value)
         view.classifications.adapter = adapter
-        service.classifications.observe(this, Observer { _ -> adapter.notifyDataSetChanged() } )
+        service.classifications.observe(this, Observer {t -> updateListing(t)} )
         return view
     }
 
+    private fun updateListing(newListing: List<ClassificationResult>?){
+        //TODO: remove this monstrosity
+        adapter.clear()
+        adapter.addAll(newListing)
+        adapter.notifyDataSetChanged()
+    }
 }

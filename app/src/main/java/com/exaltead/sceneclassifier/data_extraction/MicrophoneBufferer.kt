@@ -1,6 +1,7 @@
 package com.exaltead.sceneclassifier.data_extraction
 
-import android.media.AudioFormat.*
+import android.media.AudioFormat.CHANNEL_IN_MONO
+import android.media.AudioFormat.ENCODING_PCM_FLOAT
 import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.util.Log
@@ -16,7 +17,7 @@ class MicrophoneBufferer : IAudioBufferer {
         Log.i("AudioRecorder", "min buffer size "+ minBufferSize.toString())
         // Use bigger buffer if needed
         audioRecorder = AudioRecord(MediaRecorder.AudioSource.MIC, samplingRate,
-                CHANNEL_IN_MONO, ENCODING_PCM_8BIT, minBufferSize)
+                CHANNEL_IN_MONO, ENCODING_PCM_FLOAT, minBufferSize)
     }
     override fun takeShortAudioRecord(duration: Double): FloatArray {
         //TODO: Implement
