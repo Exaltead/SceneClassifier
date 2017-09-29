@@ -30,6 +30,8 @@ class ClassifiationService : Service(){
         val audioBufferer: IAudioBufferer = MicrophoneBufferer()
         val extractor: IFeatureExtractor = MfccFeatureExtractor(audioBufferer)
         classifier = SceneClassifier(extractor)
+        classifications.value = List<ClassificationResult>(5,
+                {index -> ClassificationResult(index.toString(), Math.random()) })
     }
 }
 

@@ -19,7 +19,6 @@ private const val RECORD_AUDIO_CODE = 300
 class MainActivity : Activity() {
 
     private val connection: ClassifierServiceConncetion = ClassifierServiceConncetion()
-    private var hasPermissionToRecordAudio = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -27,9 +26,11 @@ class MainActivity : Activity() {
 
     override fun onStart() {
         super.onStart()
-        checkAndRequestPermission()
-        val intent = Intent(this, ClassifiationService::class.java)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        if(checkAndRequestPermission()){
+            activateClassificationWithFragment(this, connection)
+        }
+        // SHOW ERROR DIALOG / FRAGMENT
+
     }
 
     override fun onStop() {
@@ -43,15 +44,16 @@ class MainActivity : Activity() {
         if(requestCode == RECORD_AUDIO_CODE && grantResults?.size == 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
             Log.i(TAG, "Permission granted")
-            hasPermissionToRecordAudio = true
+            activateClassificationWithFragment(this, connection)
         }
         else{
             Log.w(TAG, "Permission not granted")
+            // SHOW ERROR
         }
     }
 
-    private fun checkAndRequestPermission(){
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+    private fun checkAndRequestPermission():Boolean{
+        return if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED){
             Log.i(TAG, "Permission is not yet granted")
 
@@ -59,10 +61,26 @@ class MainActivity : Activity() {
 
             ActivityCompat.requestPermissions(this, Array(1,
                     { _ -> Manifest.permission.RECORD_AUDIO}), RECORD_AUDIO_CODE)
+            false
         }
         else{
             Log.i(TAG, "Permission already granted")
-            hasPermissionToRecordAudio = true
+            true
         }
     }
+
+    fun getClassificationService(): ClassifiationService?{
+        return connection.binder?.service
+    }
 }
+
+private fun activateClassificationWithFragment(activity: Activity, connection: ClassifierServiceConncetion){
+    activity.bindService(Intent(activity, ClassifiationService::class.java), connection, Context.BIND_AUTO_CREATE)
+    startClassificationFragment(activity)
+}
+private fun startClassificationFragment(activity: Activity){
+    activity.fragmentManager.beginTransaction()
+            .add(R.id.fragment_container, ClassificationFragment())
+            .commit()
+}
+
