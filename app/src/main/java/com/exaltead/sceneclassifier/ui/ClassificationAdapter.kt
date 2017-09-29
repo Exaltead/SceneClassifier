@@ -20,7 +20,8 @@ class ClassificationAdapter(context: Context, resource: Int, items: List<Classif
             convertView
         }
         val probability = getItem(position)
-        view.cls_probability.text = probability.toString()
+        view.cls_label.text = probability.label
+        view.cls_probability.text =  "%.4f".format(probability.result)
         return view
     }
 }

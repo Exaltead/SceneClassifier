@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
+        android:id="@+id/cls_label"
+        android:layout_width="100sp"
+        android:layout_height="wrap_content"
+        android:hint="LABEL"
+        android:layout_marginStart="20dp"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent" />
+    <TextView
         android:id="@+id/cls_probability"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="PROBABILITY"
+        android:textSize="20sp"
+        app:layout_constraintStart_toEndOf="@id/cls_label"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
