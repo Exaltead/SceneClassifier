@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import com.exaltead.sceneclassifier.R
 import com.exaltead.sceneclassifier.classification.ClassificationResult
 import kotlinx.android.synthetic.main.classification_fragment.view.*
@@ -15,8 +14,10 @@ import kotlinx.android.synthetic.main.classification_fragment.view.*
 
 class ClassificationFragment: Fragment() {
 
-    private lateinit var adapter: ArrayAdapter<ClassificationResult>
+    private lateinit var adapter: ClassificationAdapter
     private lateinit var viewModel: ClassificationViewModel
+
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         viewModel = ViewModelProviders.of(activity).get(ClassificationViewModel::class.java)
         val view =  inflater!!.inflate(R.layout.classification_fragment, container, false)
@@ -27,9 +28,6 @@ class ClassificationFragment: Fragment() {
     }
 
     private fun updateListing(newListing: List<ClassificationResult>?){
-        //TODO: remove this monstrosity
-        adapter.clear()
-        adapter.addAll(newListing)
-        adapter.notifyDataSetChanged()
+        adapter.setContentAndNotify(newListing)
     }
 }

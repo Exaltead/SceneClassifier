@@ -25,18 +25,19 @@ private const val UPDATE_FREQUENCY = 2000L // 2s
 class ClassifiationService : Service(){
 
     var viewModel: ClassificationViewModel? = null
-
-    private var timer: Timer = Timer()
+    private lateinit var timer: Timer
     private lateinit var classifier: SceneClassifier
-    //private val localBinder  = ClassifierBinder(this)
+
+
     override fun onBind(p0: Intent?): IBinder {
         Log.d("ClassificationService", "Service bound")
+        timer = Timer()
         timer.scheduleAtFixedRate(UpdateTask(this), 0, UPDATE_FREQUENCY)
         return ClassifierBinder(this)
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        timer.purge()
+        timer.cancel()
         return super.onUnbind(intent)
     }
 

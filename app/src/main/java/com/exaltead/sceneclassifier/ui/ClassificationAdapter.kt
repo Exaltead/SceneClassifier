@@ -21,7 +21,17 @@ class ClassificationAdapter(context: Context, resource: Int):
         }
         val probability = getItem(position)
         view.cls_label.text = probability.label
-        view.cls_probability.text =  "%.4f".format(probability.result)
+        view.cls_probability.text =  context.getString(R.string.double_precision)
+                .format(probability.result)
         return view
     }
+}
+
+fun ClassificationAdapter.setContentAndNotify(data:List<ClassificationResult>?){
+    if(data == null){
+        return
+    }
+    this.clear()
+    this.addAll(data)
+    this.notifyDataSetChanged()
 }
