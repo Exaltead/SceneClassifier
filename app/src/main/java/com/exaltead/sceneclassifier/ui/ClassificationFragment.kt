@@ -22,7 +22,7 @@ class ClassificationFragment: Fragment() {
         service = parentActivity.getClassificationService()!!
         val view =  inflater!!.inflate(R.layout.classification_fragment, container, false)
         adapter = ClassificationAdapter(this.context,
-                R.layout.classification_view,service.classifications.value)
+                R.layout.classification_view)
         view.classifications.adapter = adapter
         service.classifications.observe(this, Observer {t -> updateListing(t)} )
         return view

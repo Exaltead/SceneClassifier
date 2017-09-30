@@ -9,8 +9,8 @@ import com.exaltead.sceneclassifier.R
 import com.exaltead.sceneclassifier.classification.ClassificationResult
 import kotlinx.android.synthetic.main.classification_view.view.*
 
-class ClassificationAdapter(context: Context, resource: Int, items: List<ClassificationResult>?):
-        ArrayAdapter<ClassificationResult>(context, resource, items){
+class ClassificationAdapter(context: Context, resource: Int):
+        ArrayAdapter<ClassificationResult>(context, resource, mutableListOf()){
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View = if (convertView == null){
