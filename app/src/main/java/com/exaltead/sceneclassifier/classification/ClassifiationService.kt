@@ -1,7 +1,6 @@
 package com.exaltead.sceneclassifier.classification
 
 import android.app.Service
-import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
@@ -10,6 +9,7 @@ import com.exaltead.sceneclassifier.data_extraction.IAudioBufferer
 import com.exaltead.sceneclassifier.data_extraction.IFeatureExtractor
 import com.exaltead.sceneclassifier.data_extraction.MfccFeatureExtractor
 import com.exaltead.sceneclassifier.data_extraction.MicrophoneBufferer
+import com.exaltead.sceneclassifier.ui.ClassificationViewModel
 import java.util.*
 
 data class ClassificationResult(val label: String, val result: Double)
@@ -23,14 +23,16 @@ private class UpdateTask(val service: ClassifiationService): TimerTask() {
 
 private const val UPDATE_FREQUENCY = 2000L // 2s
 class ClassifiationService : Service(){
-    var classifications: MutableLiveData<List<ClassificationResult>> = MutableLiveData()
+
+    var viewModel: ClassificationViewModel? = null
+
     private var timer: Timer = Timer()
     private lateinit var classifier: SceneClassifier
-    private val localBinder  = ClassifierBinder(this)
+    //private val localBinder  = ClassifierBinder(this)
     override fun onBind(p0: Intent?): IBinder {
         Log.d("ClassificationService", "Service bound")
         timer.scheduleAtFixedRate(UpdateTask(this), 0, UPDATE_FREQUENCY)
-        return localBinder
+        return ClassifierBinder(this)
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -43,11 +45,10 @@ class ClassifiationService : Service(){
         val audioBufferer: IAudioBufferer = MicrophoneBufferer()
         val extractor: IFeatureExtractor = MfccFeatureExtractor(audioBufferer)
         classifier = SceneClassifier(extractor)
-        classifications.value = classifier.getCurrentClassification()
     }
 
     fun updateStatistics(){
-        classifications.postValue(classifier.getCurrentClassification())
+        viewModel?.data?.postValue(classifier.getCurrentClassification())
     }
 }
 

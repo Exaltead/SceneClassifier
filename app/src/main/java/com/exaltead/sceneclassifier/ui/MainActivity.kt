@@ -2,6 +2,7 @@ package com.exaltead.sceneclassifier.ui
 
 import android.Manifest
 import android.app.Activity
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -20,11 +21,13 @@ private const val RECORD_AUDIO_CODE = 300
 class MainActivity : FragmentActivity() {
 
     private val connection: ClassifierServiceConncetion = ClassifierServiceConncetion(this)
+    private lateinit var viewModel: ClassificationViewModel
     var infoText = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         startInfoFragment(this)
+        viewModel = ViewModelProviders.of(this).get(ClassificationViewModel::class.java)
     }
 
     override fun onStart() {
@@ -62,7 +65,6 @@ class MainActivity : FragmentActivity() {
             Log.i(TAG, "Permission is not yet granted")
 
             // TODO: show rationale: https://developer.android.com/training/permissions/requesting.html
-
             ActivityCompat.requestPermissions(this, Array(1,
                     { _ -> Manifest.permission.RECORD_AUDIO}), RECORD_AUDIO_CODE)
             false
@@ -78,6 +80,7 @@ class MainActivity : FragmentActivity() {
     }
 
     fun notifyServiceReady(){
+        getClassificationService()?.viewModel = viewModel
         startClassificationFragment(this)
     }
     private fun attemptBindClassificationService(activity: Activity, connection: ClassifierServiceConncetion){
