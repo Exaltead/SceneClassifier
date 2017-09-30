@@ -18,9 +18,7 @@ class ClassificationFragment: Fragment() {
     private lateinit var adapter: ArrayAdapter<ClassificationResult>
     private lateinit var viewModel: ClassificationViewModel
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
-
-        val parentActivity = this.activity as MainActivity
-        viewModel = ViewModelProviders.of(parentActivity).get(ClassificationViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity).get(ClassificationViewModel::class.java)
         val view =  inflater!!.inflate(R.layout.classification_fragment, container, false)
         adapter = ClassificationAdapter(this.context, R.layout.classification_view)
         view.classifications.adapter = adapter
