@@ -5,10 +5,10 @@ import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import com.exaltead.sceneclassifier.data_extraction.IAudioBufferer
+import com.exaltead.sceneclassifier.data_extraction.IAudioRecorder
 import com.exaltead.sceneclassifier.data_extraction.IFeatureExtractor
 import com.exaltead.sceneclassifier.data_extraction.MfccFeatureExtractor
-import com.exaltead.sceneclassifier.data_extraction.MicrophoneBufferer
+import com.exaltead.sceneclassifier.data_extraction.MicrophoneRecorder
 import com.exaltead.sceneclassifier.ui.ClassificationViewModel
 import java.util.*
 
@@ -43,8 +43,8 @@ class ClassifiationService : Service(){
 
     override fun onCreate() {
         super.onCreate()
-        val audioBufferer: IAudioBufferer = MicrophoneBufferer()
-        val extractor: IFeatureExtractor = MfccFeatureExtractor(audioBufferer)
+        val audioRecorder: IAudioRecorder = MicrophoneRecorder()
+        val extractor: IFeatureExtractor = MfccFeatureExtractor(audioRecorder)
         classifier = SceneClassifier(extractor)
     }
 

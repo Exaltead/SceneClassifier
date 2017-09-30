@@ -1,6 +1,6 @@
 package com.exaltead.sceneclassifier.data_extraction
 
-interface IAudioBufferer {
+interface IAudioRecorder {
 
     fun takeShortAudioRecord(duration: Double): ShortArray
 }
