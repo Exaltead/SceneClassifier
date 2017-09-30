@@ -19,7 +19,7 @@ private fun groupByTime(samples:Array<Float>): List<Double>{
     val result: MutableList<Double> = mutableListOf()
     val accumulator: MutableList<Float> = mutableListOf()
     for ( i in samples.indices){
-        if(i % samples.size / 10 == 0){
+        if(i % samples.size / 10 == 0 && i != 0){
             Log.i(TAG, "Smallest "+ accumulator.min().toString()+ "Largest " + accumulator.max())
             result.add(accumulator.average())
             accumulator.clear()
