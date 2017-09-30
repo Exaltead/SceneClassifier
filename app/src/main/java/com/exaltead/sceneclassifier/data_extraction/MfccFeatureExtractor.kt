@@ -1,8 +1,8 @@
 package com.exaltead.sceneclassifier.data_extraction
 
-class MfccFeatureExtractor(private val audioBufferer: IAudioBufferer) : IFeatureExtractor{
+class MfccFeatureExtractor(private val audioRecorder: IAudioRecorder) : IFeatureExtractor{
     override fun receiveFeaturesForTimeSpan(time: Double): Array<Float> {
-        val samples = audioBufferer.takeShortAudioRecord(time)
+        val samples = audioRecorder.takeShortAudioRecord(time)
         return samples.map { t -> t.toFloat() }.toTypedArray()
     }
 }

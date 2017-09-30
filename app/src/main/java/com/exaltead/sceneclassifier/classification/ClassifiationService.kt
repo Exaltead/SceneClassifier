@@ -23,14 +23,15 @@ private class UpdateTask(val service: ClassifiationService): TimerTask() {
 
 private const val UPDATE_FREQUENCY = 2000L // 2s
 class ClassifiationService : Service(){
-
     var viewModel: ClassificationViewModel? = null
     private lateinit var timer: Timer
     private lateinit var classifier: SceneClassifier
+    private lateinit var audioRecorder: IAudioRecorder
 
 
     override fun onBind(p0: Intent?): IBinder {
         Log.d("ClassificationService", "Service bound")
+        audioRecorder.start()
         timer = Timer()
         timer.scheduleAtFixedRate(UpdateTask(this), 0, UPDATE_FREQUENCY)
         return ClassifierBinder(this)
@@ -38,12 +39,13 @@ class ClassifiationService : Service(){
 
     override fun onUnbind(intent: Intent?): Boolean {
         timer.cancel()
+        audioRecorder.stop()
         return super.onUnbind(intent)
     }
 
     override fun onCreate() {
         super.onCreate()
-        val audioRecorder: IAudioRecorder = MicrophoneRecorder()
+        audioRecorder = MicrophoneRecorder()
         val extractor: IFeatureExtractor = MfccFeatureExtractor(audioRecorder)
         classifier = SceneClassifier(extractor)
     }
