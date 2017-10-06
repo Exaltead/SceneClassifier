@@ -20,18 +20,18 @@
  * IN THE SOFTWARE.
  *
  */
-#include "mfcc_extractor.h"
+#include "mfcc.h"
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
 
-int xtract_dct(const double *data, const int N, double *result)
+int xtract_dct(const double data[], const int N, double result[])
 {
 
     int n;
     int m;
-    double *temp = (double*)calloc(N, sizeof(double));
+    double *temp = (double*)calloc((size_t)N, sizeof(double));
 
     for (n = 0; n < N; ++n)
     {
