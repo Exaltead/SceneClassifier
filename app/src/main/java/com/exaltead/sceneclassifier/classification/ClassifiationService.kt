@@ -21,7 +21,7 @@ private class UpdateTask(val service: ClassifiationService): TimerTask() {
     }
 }
 
-private const val UPDATE_FREQUENCY = 2000L // 2s
+private const val UPDATE_FREQUENCY = 1000L // 1s
 class ClassifiationService : Service(){
     var viewModel: ClassificationViewModel? = null
     private lateinit var timer: Timer
@@ -33,7 +33,7 @@ class ClassifiationService : Service(){
         Log.d("ClassificationService", "Service bound")
         audioRecorder.start()
         timer = Timer()
-        timer.scheduleAtFixedRate(UpdateTask(this), 0, UPDATE_FREQUENCY)
+        timer.schedule(UpdateTask(this), 0, UPDATE_FREQUENCY)
         return ClassifierBinder(this)
     }
 

@@ -29,7 +29,7 @@ Java_com_exaltead_sceneclassifier_jni_MfccJni_initMfccHolder(JNIEnv *env, jobjec
 
 jobject createMfccHolder(JNIEnv *env, double** mfcc2dArray, int rows, int columns){
     jmethodID constructorString;
-    jclass holderClass = (*env) -> FindClass(env, "com.exaltead.sceneclassifier.SceneJni/MfccJniHolder");
+    jclass holderClass = (*env) -> FindClass(env, "com/exaltead/sceneclassifier/jni/MfccJniHolder");
     if(holderClass == NULL){
         __android_log_write(ANDROID_LOG_ERROR, "SceneJNI", "Could not find holder class");
     }
