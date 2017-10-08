@@ -23,7 +23,9 @@
 
 #ifndef SCENECLASSIFIER_MFCC_H
 #define SCENECLASSIFIER_MFCC_H
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 #define XTRACT_VERY_SMALL_NUMBER 2e-42
 #define XTRACT_LOG_LIMIT XTRACT_VERY_SMALL_NUMBER
 
@@ -51,6 +53,8 @@ typedef struct xtract_mel_filter_ {
 
 int mfcc(const double *data, const int N, const mel_filter *filter, double *result);
 
-int init_mfcc(int N, double nyquist, int style, double freq_min, double freq_max, int freq_bands, double **fft_tables);
-
+int xtract_init_mfcc(int N, double nyquist, int style, double freq_min, double freq_max, int freq_bands, double **fft_tables);
+#ifdef __cplusplus
+}
+#endif
 #endif //SCENECLASSIFIER_MFCC_H

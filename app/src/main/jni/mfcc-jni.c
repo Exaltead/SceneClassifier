@@ -4,32 +4,39 @@
 
 #include "mfcc.h"
 
+
 jobjectArray createJavaArrayFromPrimitive2dArray(JNIEnv *env, double** primitive2DArray, int rows, int columns);
-jobject createMfccHolder(JNIEnv *env, double** mfcc2dArray, int rows, int columns);
+jobject createMfccHolder(JNIEnv *env, mel_filter melFilter, int rows, int columns);
+double** allocate2dDoubleArray(int rows, int columns);
+
+const int numberOfFilters = 10;
+const int samplesPerFilter = 500;
+const int minFrequency = 50;
+const int maxFrequency = 9000;
 
 JNIEXPORT jobject JNICALL
-Java_com_exaltead_sceneclassifier_jni_MfccJni_initMfccHolder(JNIEnv *env, jobject instance) {
+Java_com_exaltead_sceneclassifier_jni_MfccJni_initMfccHolder(JNIEnv *env, jobject instance, jint samplingRate) {
 
-    int columsOrN = 500;
-    int rowsORFreqBands = 10;
-    int i, j;
-    double **arr = (double **)malloc(rowsORFreqBands * sizeof(double *));
-    for (i=0; i<rowsORFreqBands; i++)
-        arr[i] = (double *)malloc(columsOrN * sizeof(double));
-
-    //SET MOCK VALUE
-    int count = 0;
-    for (i = 0; i <  rowsORFreqBands; i++)
-        for (j = 0; j < columsOrN; j++)
-            arr[i][j] = ++count;
-
-    return createMfccHolder(env, arr, rowsORFreqBands, columsOrN);
+    const int columsOrN = 500;
+    const int rowsORFreqBands = 10;
+    mel_filter melFilter;
+    melFilter.n_filters = rowsORFreqBands;
+    //Initialize the object
+    melFilter.filters = allocate2dDoubleArray(rowsORFreqBands, columsOrN);
+    if(xtract_init_mfcc(columsOrN, samplingRate/2,XTRACT_EQUAL_GAIN,
+                        50, 9000, melFilter.n_filters, melFilter.filters)
+            != XTRACT_SUCCESS){
+        __android_log_write(ANDROID_LOG_ERROR, "SceneJNI", "Failed to initialize ftt tables");
+    }
+    return createMfccHolder(env, melFilter, rowsORFreqBands, columsOrN);
 
 }
 
-jobject createMfccHolder(JNIEnv *env, double** mfcc2dArray, int rows, int columns){
+jobject createMfccHolder(JNIEnv *env, mel_filter melFilter, int rows, int columns){
     jmethodID constructorString;
+    double** mfcc2dArray;
     jclass holderClass = (*env) -> FindClass(env, "com/exaltead/sceneclassifier/jni/MfccJniHolder");
+    mfcc2dArray = melFilter.filters;
     if(holderClass == NULL){
         __android_log_write(ANDROID_LOG_ERROR, "SceneJNI", "Could not find holder class");
     }
@@ -56,3 +63,12 @@ jobjectArray createJavaArrayFromPrimitive2dArray(JNIEnv *env, double** primitive
     }
     return result;
 }
+
+double** allocate2dDoubleArray(int rows, int columns){
+    int i;
+    double **arr = (double **)malloc(rows * sizeof(double *));
+    for (i=0; i<rows; i++)
+        arr[i] = (double *)malloc(columns * sizeof(double));
+    return arr;
+}
+
