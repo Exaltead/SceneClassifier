@@ -9,7 +9,7 @@ class WawRecorder : IAudioRecorder {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun takeShortAudioRecord(duration: Double): ShortArray {
+    override fun takeAudioRecord(duration: Double): FloatArray {
         TODO("not implemented")
     }
 

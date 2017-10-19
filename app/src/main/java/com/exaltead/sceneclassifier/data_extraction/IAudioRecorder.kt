@@ -2,7 +2,7 @@ package com.exaltead.sceneclassifier.data_extraction
 
 interface IAudioRecorder {
 
-    fun takeShortAudioRecord(duration: Double): ShortArray
+    fun takeAudioRecord(duration: Double): FloatArray
 
     fun start()
     fun stop()

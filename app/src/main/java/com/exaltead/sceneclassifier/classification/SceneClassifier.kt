@@ -6,7 +6,7 @@ private const val TAG = "SceneClassifier"
 
 class SceneClassifier(private val featureExtractor: IFeatureExtractor) {
     fun getCurrentClassification(): List<ClassificationResult> {
-        val samples = featureExtractor.receiveFeaturesForTimeSpan(1.0)
+        val samples = featureExtractor.receiveFeaturesForTimeSpan()
         //"Classification" results
         return groupByTime(samples).mapIndexed({ i, d -> ClassificationResult(i.toString(), d)})
     }
