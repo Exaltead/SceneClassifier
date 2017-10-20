@@ -2,22 +2,21 @@ import phonecs.readWawFile
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
-import javax.sound.sampled.AudioInputStream
 
 const val resPrefix = "res/"
 internal data class DatasetHolder(val path: String, val type: String, val location: String)
 
-class WawIterable(metaFileLocation: String) : Iterable<FloatArray> {
+class WawIterable(metaFileLocation: String) : Iterable<DoubleArray> {
 
     internal val locations: List<DatasetHolder> = readMetadataFile(metaFileLocation)
 
-    override fun iterator(): Iterator<FloatArray> {
+    override fun iterator(): Iterator<DoubleArray> {
         return WawIterator(this)
     }
 
 }
 
-private class WawIterator(private val iterable: WawIterable) : Iterator<FloatArray> {
+private class WawIterator(private val iterable: WawIterable) : Iterator<DoubleArray> {
 
     private var index = 0
     override fun hasNext(): Boolean {
@@ -36,7 +35,7 @@ private class WawIterator(private val iterable: WawIterable) : Iterator<FloatArr
         return false
     }
 
-    override fun next(): FloatArray {
+    override fun next(): DoubleArray {
         index++
         return readWawFile(resPrefix + iterable.locations[index-1].path)
     }
