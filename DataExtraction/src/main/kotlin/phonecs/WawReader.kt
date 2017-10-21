@@ -21,5 +21,5 @@ fun readWawFile(filename: String): DoubleArray{
 private fun DoubleArray.covertToMono(numberOfChannels: Int): DoubleArray {
     // Do the mono conversion in a stupid way...
     // Namely discard the other channel...
-    return DoubleArray(this.size/2, {i -> this[i * 2]})
+    return DoubleArray(this.size/numberOfChannels, {i -> this[i * numberOfChannels]})
 }

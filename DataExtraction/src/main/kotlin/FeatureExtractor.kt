@@ -1,21 +1,23 @@
 import be.tarsos.dsp.mfcc.MFCC
 
-const val SAMPLING_RATE = 44100
-const val SAMPLE_MAX_LENGHT = 1 * SAMPLING_RATE
-class FeatureExtractor {
 
-    private val mfcc = MFCC(SAMPLE_MAX_LENGHT, SAMPLING_RATE)
 
-    fun splitToMfccSegements(samples: FloatArray): List<FloatArray> {
-        TODO()
-    }
+fun calculateMfccMfccSegements(samples: FloatArray, mfcc: MFCC): List<FloatArray> {
+    return splitToSegments(samples).map { t -> t.getMfcc(mfcc) }
 
-    private fun calculateMfcc(samples: FloatArray): FloatArray {
+}
 
-        val bin = mfcc.magnitudeSpectrum(samples)
-        val fbank = mfcc.melFilter(bin, mfcc.centerFrequencies)
-        val f = mfcc.nonLinearTransformation(fbank)
-        return mfcc.cepCoefficients(f)
+private fun splitToSegments(mainArray: FloatArray): List<FloatArray> {
+    return (0 .. mainArray.size - SAMPLE_MAX_LENGHT step SAMPLE_MAX_LENGHT)
+            .map { FloatArray(SAMPLE_MAX_LENGHT, { index -> mainArray[it + index]}) }
+}
 
-    }
+
+
+private fun FloatArray.getMfcc(mfcc: MFCC): FloatArray {
+    val bin = mfcc.magnitudeSpectrum(this)
+    val fbank = mfcc.melFilter(bin, mfcc.centerFrequencies)
+    val f = mfcc.nonLinearTransformation(fbank)
+    return mfcc.cepCoefficients(f)
+
 }

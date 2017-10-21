@@ -1,0 +1,2 @@
+const val SAMPLING_RATE = 44100
+const val SAMPLE_MAX_LENGHT = 1 * SAMPLING_RATE
