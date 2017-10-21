@@ -13,5 +13,13 @@ fun readWawFile(filename: String): DoubleArray{
     val frames = DoubleArray(numberOfChannels * numberOfFrames.toInt())
     wawFile.readFrames(frames, wawFile.numFrames.toInt())
     wawFile.close()
-    return frames
+
+    // Convert to mono
+    return frames.covertToMono(numberOfChannels)
+}
+
+private fun DoubleArray.covertToMono(numberOfChannels: Int): DoubleArray {
+    // Do the mono conversion in a stupid way...
+    // Namely discard the other channel...
+    return DoubleArray(this.size/2, {i -> this[i * 2]})
 }
