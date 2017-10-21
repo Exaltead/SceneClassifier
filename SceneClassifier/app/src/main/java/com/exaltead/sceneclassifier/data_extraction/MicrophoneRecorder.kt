@@ -11,8 +11,8 @@ import java.io.InvalidObjectException
 private const val TAG = "MicRecorder"
 class MicrophoneRecorder : IAudioRecorder {
     private lateinit var audioRecorder: AudioRecord
-    private val minBufferSize =  AudioRecord.getMinBufferSize(SAMPLING_RATE, CHANNEL_IN_MONO,
-            ENCODING_PCM_FLOAT)
+    private val minBufferSize =  AudioRecord.getMinBufferSize(SAMPLING_RATE, CHANNELS,
+            AUDIO_ENCODING)
     private var currentlyRecording = false
     init {
         Log.i("AudioRecorder", "min buffer size "+ minBufferSize.toString())
@@ -23,7 +23,7 @@ class MicrophoneRecorder : IAudioRecorder {
         currentlyRecording = true
         // Use bigger buffer if needed
         audioRecorder = AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLING_RATE,
-                CHANNEL_IN_MONO, ENCODING_PCM_FLOAT, minBufferSize)
+                CHANNELS, AUDIO_ENCODING, minBufferSize)
     }
 
     override fun stop() {
