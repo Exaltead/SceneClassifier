@@ -5,7 +5,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
 
-const val resPrefix = "res/"
+const val resPrefix = "../Resources/"
 internal data class DatasetHolder(val path: String, val type: String, val location: String)
 
 
@@ -22,10 +22,15 @@ class WawIterable(metaFileLocation: String) : Iterable<Feature> {
 private class WawIterator(private val iterable: WawIterable) : Iterator<Feature> {
 
     private var index = 0
+    private var found = 0
     override fun hasNext(): Boolean {
         for(i in index until iterable.locations.size){
             if(File(resPrefix + iterable.locations[i].path).exists()){
-                println("Found "+ iterable.locations[i].path + " max remaining "+ (iterable.locations.size - i))
+                //println("Found: "+ iterable.locations[i].path + "remaining "+ (iterable.locations.size - i))
+                found++
+                if(found % 50 == 0){
+                    println("Remaining ${iterable.locations.size - i} / ${iterable.locations.size}" )
+                }
                 return true
             }
             else{
@@ -34,7 +39,7 @@ private class WawIterator(private val iterable: WawIterable) : Iterator<Feature>
                 continue
             }
         }
-        println("No more files in meta file")
+        println("No more files in meta file, read successfully $found of ${iterable.locations.size} files")
         return false
     }
 
