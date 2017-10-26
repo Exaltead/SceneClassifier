@@ -6,7 +6,7 @@ import java.io.File
 fun readWawFile(filename: String): DoubleArray{
     println("Reading " + filename)
     val wawFile = WavFile.openWavFile(File(filename))
-    wawFile.display()
+    //wawFile.display()
     val  numberOfChannels = wawFile.numChannels
     val numberOfFrames = wawFile.numFrames
     // Allocate space for all of the frames

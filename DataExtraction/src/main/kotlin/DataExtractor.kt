@@ -1,13 +1,14 @@
 import be.tarsos.dsp.mfcc.MFCC
+import features.Feature
+import features.WawIterable
+import features.makeToMfccFeatures
 
 fun main(args: Array<String>){
     val mfcc = MFCC(SAMPLE_MAX_LENGHT, SAMPLING_RATE)
     val wavFileIterable = WawIterable("res/train_meta.txt")
-    for (i in wavFileIterable){
-        print("Average" + i.average())
-        print(" Min:" + i.min())
-        print(" Max:" + i.max())
-        print(" Size " + i.size +'\n')
-        val segments = calculateMfccMfccSegements(i.map { t -> t.toFloat() }.toFloatArray(), mfcc)
-    }
+    val features = readFeatures(wavFileIterable, mfcc)
+}
+
+fun readFeatures(wawIterable: WawIterable, mfcc: MFCC): List<Feature>{
+    return wawIterable.flatMap { t -> t.makeToMfccFeatures(mfcc) }
 }

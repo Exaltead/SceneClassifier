@@ -1,3 +1,5 @@
+package features
+
 import phonecs.readWawFile
 import java.io.BufferedReader
 import java.io.File
@@ -6,23 +8,24 @@ import java.io.FileReader
 const val resPrefix = "res/"
 internal data class DatasetHolder(val path: String, val type: String, val location: String)
 
-class WawIterable(metaFileLocation: String) : Iterable<DoubleArray> {
+
+class WawIterable(metaFileLocation: String) : Iterable<Feature> {
 
     internal val locations: List<DatasetHolder> = readMetadataFile(metaFileLocation)
 
-    override fun iterator(): Iterator<DoubleArray> {
+    override fun iterator(): Iterator<Feature> {
         return WawIterator(this)
     }
 
 }
 
-private class WawIterator(private val iterable: WawIterable) : Iterator<DoubleArray> {
+private class WawIterator(private val iterable: WawIterable) : Iterator<Feature> {
 
     private var index = 0
     override fun hasNext(): Boolean {
         for(i in index until iterable.locations.size){
             if(File(resPrefix + iterable.locations[i].path).exists()){
-                println("Found "+ iterable.locations[i].path)
+                println("Found "+ iterable.locations[i].path + " max remaining "+ (iterable.locations.size - i))
                 return true
             }
             else{
@@ -35,9 +38,11 @@ private class WawIterator(private val iterable: WawIterable) : Iterator<DoubleAr
         return false
     }
 
-    override fun next(): DoubleArray {
+    override fun next(): Feature {
         index++
-        return readWawFile(resPrefix + iterable.locations[index-1].path)
+        val datasetHolder = iterable.locations[index - 1]
+        return Feature(datasetHolder.location,datasetHolder.type, readWawFile(resPrefix + datasetHolder.path)
+                .map { t -> t.toFloat() }.toFloatArray())
     }
 
 }
