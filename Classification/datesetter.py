@@ -11,17 +11,17 @@ class Dataset:
         self.test_data = test_data
         self.test_labels = test_labels
         self.label_explanation = label_explanation
-        print(self.test_data.shape, train_data.shape)
+        print("Testing:", self.test_data.shape, "Training", train_data.shape)
 
 
 def read_dataset(filename: str, train_to_test_split=0.8)-> Dataset:
     file = open(filename, mode='r')
-    contents = read_from_csv_dataset(file, train_to_test_split)
+    contents = _read_from_csv_dataset(file, train_to_test_split)
     file.close()
     return contents
 
 
-def read_from_csv_dataset(file, train_to_test_split) -> Dataset:
+def _read_from_csv_dataset(file, train_to_test_split) -> Dataset:
     """
     Reads dataset out of formatted csv file... to lazy to make efficient file system size the data is very compressed
     The currently used csv format is location, type, values
@@ -85,14 +85,14 @@ def _create_dataset_from_rec_and_test(rec_tree, test_locations) -> Dataset:
 def _create_class_labels(types: list):
     result = {}
     for i, rt in enumerate(types):
-        result[rt] = i
+        result[rt] = int(i)
     return result
 
 
 def _init_numpy_arrays(rec_tree, test_locations):
     train_size, test_size = _get_number_of_train_and_test_samples(rec_tree, test_locations)
-    train_labels = np.zeros(train_size)
-    test_labels = np.zeros(test_size)
+    train_labels = np.zeros(train_size, dtype=np.int8)
+    test_labels = np.zeros(test_size, dtype=np.int8)
     sample_length = _get_and_check_sample_length(rec_tree)
     train_data = np.zeros((train_size, sample_length),dtype=np.float32)
     test_data = np.zeros((test_size, sample_length), dtype=np.float32)
