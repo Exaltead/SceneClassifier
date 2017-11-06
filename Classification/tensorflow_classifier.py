@@ -1,7 +1,8 @@
 import tensorflow as tf
-import numpy as np
+from tensorflow.python.framework.graph_util import convert_variables_to_constants
+
 from datesetter import read_dataset
-from util import *
+from util import to_one_hot, calculate_accuracy, suffle_dataset
 NUMBER_OF_CLASSES = 15
 INPUT_SAMPLE_LENGHT = 30
 INPUT_TENSOR_NAME = 'dadaa'
@@ -9,6 +10,7 @@ OUTPUT_TENSOR_NAME = 'tuutuut'
 LABEL_TENSOR_NAME = 'meepmeep'
 FEATURE_FILENAME = "../Resources/mfcc.csv"
 BATCH_SIZE = 100
+HIDDEN_LAYER_SIZE = 50
 
 def create_computation_graph():
     x = tf.placeholder(tf.float32,
@@ -32,7 +34,13 @@ def create_computation_graph():
 
     return x, y_, train_step, output
 
-if __name__ == '__main__':
+def save_model(sess: tf.Session):
+    minimal_graph = convert_variables_to_constants(sess, sess.graph_def, [OUTPUT_TENSOR_NAME])
+
+    tf.train.write_graph(minimal_graph, '.', 'minimal_graph.proto', as_text=False)
+    tf.train.write_graph(minimal_graph, '.', 'minimal_graph.txt', as_text=True)
+
+def main():
     x, y_, train_step, output = create_computation_graph()
     datset = suffle_dataset(read_dataset(FEATURE_FILENAME))
     datset.train_labels = to_one_hot(datset.train_labels)
@@ -45,7 +53,12 @@ if __name__ == '__main__':
             batch = datset.train_data[batch_start: batch_start+BATCH_SIZE]
             labels = datset.train_labels[batch_start: batch_start+BATCH_SIZE]
             train_step.run(session=sess, feed_dict={x: batch, y_: labels})
-        print("Iteration", e, "complete")
+        print("Iteration", e, "accuracy:", calculate_accuracy(sess, output, {x: datset.test_data}, datset.test_labels))
+    save_model(sess)
+
+
+if __name__ == '__main__':
+    main()
 
     # Test some predicitons
 
@@ -54,4 +67,3 @@ if __name__ == '__main__':
     #    print("Correct", datset.test_labels[i])
 
 
-    print("Accuracy:",calculate_accuracy(sess, output, {x: datset.test_data}, datset.test_labels))
