@@ -36,6 +36,10 @@ def calculate_accuracy(sess: tf.Session, y, feed_dict, correct):
             cor += 1
     return cor / correct.size
 
+def print_graph(graph: tf.Graph):
+    for i in graph.get_operations():
+        print(i)
+
 if __name__ == '__main__':
     print(to_one_hot(np.asarray([1,2,3,3,2,1])))
     print(suffle(np.asarray([1,2,3,3,2,1]), np.asarray([1,2,3,3,2,1])+1))

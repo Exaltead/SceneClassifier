@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.python.framework.graph_util import convert_variables_to_constants
 from tensorflow.python.platform import gfile
 from datesetter import read_dataset
-from util import to_one_hot, calculate_accuracy, suffle_dataset
+from util import to_one_hot, calculate_accuracy, suffle_dataset, print_graph
 NUMBER_OF_CLASSES = 15
 INPUT_SAMPLE_LENGHT = 30
 INPUT_TENSOR_NAME = 'dadaa'
@@ -30,10 +30,13 @@ def create_computation_graph(x):
     return tf.matmul(layer_2, weights['out']) + biases['out']
 
 def save_model(sess: tf.Session):
-    minimal_graph = convert_variables_to_constants(sess, sess.graph_def, [OUTPUT_TENSOR_NAME])
+    minimal_graph = convert_variables_to_constants(sess, tf.get_default_graph().as_graph_def(), [OUTPUT_TENSOR_NAME])
 
-    tf.train.write_graph(minimal_graph, '.', 'minimal_graph.proto', as_text=False)
-    tf.train.write_graph(minimal_graph, '.', 'minimal_graph.txt', as_text=True)
+    #tf.train.write_graph(minimal_graph, '.', 'minimal_graph.proto', as_text=False)
+    #tf.train.write_graph(minimal_graph, '.', 'minimal_graph.txt', as_text=True)
+
+    with tf.gfile.GFile("model.pb", "wb") as f:
+        f.write(minimal_graph.SerializeToString())
 
 
 def add_predictor(logits):
@@ -49,7 +52,7 @@ def make_traingin_step(logits, Y, learning_rate=0.001):
 
 
 def train_model(sess: tf.Session, x, y,train_op, dataset, loss_op=None):
-    for e in range(100):
+    for e in range(20):
         avg_cost = 0.
         total_batch = int(dataset.train_data.shape[0] / BATCH_SIZE)
         for i in range(int(total_batch) -1):
@@ -84,33 +87,43 @@ def train_and_save():
         save_model(sess)
 
 
-def load_graph(sess):
-    with open("minimal_graph.proto", 'rb') as f:
+def load_graph() -> tf.GraphDef:
+    with tf.gfile.GFile("model.pb", 'rb') as f:
         graph_def = tf.GraphDef()
         graph_def.ParseFromString(f.read())
+    graph = tf.Graph().as_default()
+    tf.import_graph_def(graph_def)
+    return graph
+
+
 
 
 def load_and_test_graph():
     dataset = read_dataset(FEATURE_FILENAME)
     #persisted_sess.graph.as_default()
+    load_graph()
+    print_graph(tf.get_default_graph())
     with tf.Session() as sess:
-        load_graph(sess)
-        output_tensor = sess.graph.get_tensor_by_name(OUTPUT_TENSOR_NAME+":0")
-        input_tensor = sess.graph.get_tensor_by_name(INPUT_TENSOR_NAME+":0")
-        print("Accuracy", calculate_accuracy(sess, output_tensor, {input_tensor: dataset.test_data}, dataset.test_labels))
+        #sess.run(tf.global_variables_initializer())
+        output_tensor = sess.graph.get_tensor_by_name("import/" + OUTPUT_TENSOR_NAME + ":0")
+        input_tensor = sess.graph.get_tensor_by_name("import/" + INPUT_TENSOR_NAME + ":0")
+
+        print_acc(sess, output_tensor, input_tensor, dataset)
+
+def print_acc(sess, output_tensor, input_tensor, dataset):
+    print("Train accuracy",calculate_accuracy(sess, output_tensor, {input_tensor: dataset.train_data}, dataset.train_labels))
+    print("Test accuracy", calculate_accuracy(sess, output_tensor, {input_tensor: dataset.test_data}, dataset.test_labels))
+
 
 def main():
-    #train_and_save()
-    load_and_test_graph()
+    test = 2
+    if test == 1:
+        train_and_save()
+    else:
+        load_and_test_graph()
 
 
 if __name__ == '__main__':
     main()
-
-    # Test some predicitons
-
-    #for i in range(10):
-    #    print("Guessed", sess.run(output, feed_dict={x:np.reshape(datset.test_data[i,:], (1, 30))}))
-    #    print("Correct", datset.test_labels[i])
 
 
