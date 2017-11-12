@@ -13,7 +13,7 @@ private const val OUTPUT_TENSOR_NAME = "tuutuut"
 private const val INPUT_TENSOR_NAME = "dadaa"
 private const val SAMPLE_LENGHT = 30L
 private const val NUMBER_OF_CLASSES = 15
-private const val MODEL_FILE = "file:///android_asset/optimized_tfdroid.pb";
+private const val MODEL_FILE = "file:///android_asset/model.pb";
 
 class SceneClassifier(private val featureExtractor: IFeatureExtractor):Closeable {
     private val inference: TensorFlowInferenceInterface
@@ -34,14 +34,13 @@ class SceneClassifier(private val featureExtractor: IFeatureExtractor):Closeable
 
     fun getCurrentClassification(): List<ClassificationResult>{
         val inputs = featureExtractor.receiveFeaturesForTimeSpan()
-        inference.feed(INPUT_TENSOR_NAME, inputs.toFloatArray(), SAMPLE_LENGHT)
+        inference.feed(INPUT_TENSOR_NAME, inputs.toFloatArray(), 1, SAMPLE_LENGHT)
         inference.run(arrayOf(OUTPUT_TENSOR_NAME))
         val results = FloatArray(NUMBER_OF_CLASSES)
         inference.fetch(OUTPUT_TENSOR_NAME, results)
-
-        return groupByTime(inputs)
-                .mapIndexed { index, d -> ClassificationResult(index.toString(), d) } }
+        return results.mapIndexed({i, f -> ClassificationResult(i.toString(), f.toDouble())})
     }
+}
 
 private fun groupByTime(samples:Array<Float>): List<Double>{
     val result: MutableList<Double> = mutableListOf()
