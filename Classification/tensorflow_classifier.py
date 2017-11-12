@@ -29,7 +29,7 @@ def create_computation_graph(x):
     layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
     return tf.matmul(layer_2, weights['out']) + biases['out']
 
-def save_model(sess: tf.Session):
+def save_model(sess: tf.Session, dataset):
     minimal_graph = convert_variables_to_constants(sess, tf.get_default_graph().as_graph_def(), [OUTPUT_TENSOR_NAME])
 
     #tf.train.write_graph(minimal_graph, '.', 'minimal_graph.proto', as_text=False)
@@ -37,6 +37,10 @@ def save_model(sess: tf.Session):
 
     with tf.gfile.GFile("model.pb", "wb") as f:
         f.write(minimal_graph.SerializeToString())
+
+    with open('labels.txt', mode='w') as f:
+        for i in dataset.label_explanation:
+            f.write("{},{}\n".format(dataset.label_explanation[i], i))
 
 
 def add_predictor(logits):
@@ -84,7 +88,7 @@ def train_and_save():
         output = add_predictor(logits)
 
         print("Accuracy", calculate_accuracy(sess, output, {x: datset.test_data}, datset.test_labels))
-        save_model(sess)
+        save_model(sess, datset)
 
 
 def load_graph() -> tf.GraphDef:
@@ -116,7 +120,7 @@ def print_acc(sess, output_tensor, input_tensor, dataset):
 
 
 def main():
-    test = 2
+    test = 1
     if test == 1:
         train_and_save()
     else:
