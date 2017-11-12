@@ -50,6 +50,11 @@ class ClassifiationService : Service(){
         classifier = SceneClassifier(extractor)
     }
 
+    override fun onDestroy() {
+        classifier.close()
+        super.onDestroy()
+    }
+
     fun updateStatistics(){
         viewModel?.data?.postValue(classifier.getCurrentClassification())
     }
