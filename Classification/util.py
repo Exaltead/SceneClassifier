@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-import datesetter as ds
+import dataset as ds
 
 def to_one_hot(matrix):
     matrix = matrix - np.min(matrix)
@@ -9,6 +9,11 @@ def to_one_hot(matrix):
     for c, i in enumerate(matrix):
         result[c, int(i)] = 1
     return result
+
+
+def from_one_hot(matrix, bias=0):
+    return np.argmax(matrix, 1)+bias
+
 
 def suffle(a, b):
     assert len(a) == len(b)
@@ -40,6 +45,11 @@ def print_graph(graph: tf.Graph):
     for i in graph.get_operations():
         print(i)
 
+def print_acc(sess, output_tensor, input_tensor, dataset):
+    print("Train accuracy",calculate_accuracy(sess, output_tensor, {input_tensor: dataset.train_data}, dataset.train_labels))
+    print("Test accuracy", calculate_accuracy(sess, output_tensor, {input_tensor: dataset.test_data}, dataset.test_labels))
+
 if __name__ == '__main__':
     print(to_one_hot(np.asarray([1,2,3,3,2,1])))
+    print(from_one_hot(to_one_hot(np.asarray([1,2,3,3,2,1])), 1))
     print(suffle(np.asarray([1,2,3,3,2,1]), np.asarray([1,2,3,3,2,1])+1))
