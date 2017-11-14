@@ -51,6 +51,7 @@ class ClassifiationService : Service(){
     }
 
     override fun onDestroy() {
+        timer.cancel()
         classifier.close()
         super.onDestroy()
     }

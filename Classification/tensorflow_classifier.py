@@ -51,7 +51,7 @@ def make_traingin_step(logits, Y, learning_rate=0.001):
 
 
 def train_model(sess: tf.Session, x, y, train_op, dataset, loss_op=None):
-    for e in range(20):
+    for e in range(EPOCHS):
         avg_cost = 0.
         total_batch = int(dataset.train_data.shape[0] / BATCH_SIZE)
         for i in range(int(total_batch) - 1):

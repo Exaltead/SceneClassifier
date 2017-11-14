@@ -11,3 +11,4 @@ TARGET_MODEL_NAME = "res/fmodel.pb"
 TRAIN_MODEL_SAVE_NAME = "res/tmodel.ckpt"
 TRAIN_GRAPH_SAVE_NAME = "res/tgraph.pb"
 MODEL_METAFILE_NAME = "res/labels.txt"
+EPOCHS = 100

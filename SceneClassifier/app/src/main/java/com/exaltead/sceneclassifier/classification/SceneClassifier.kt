@@ -12,7 +12,7 @@ private const val OUTPUT_TENSOR_NAME = "tuutuut"
 private const val INPUT_TENSOR_NAME = "dadaa"
 private const val SAMPLE_LENGHT = 30L
 private const val NUMBER_OF_CLASSES = 15
-private const val MODEL_FILE = "file:///android_asset/model.pb"
+private const val MODEL_FILE = "fmodel.pb"
 private const val LABEL_FILE = "labels.txt"
 
 class SceneClassifier(private val featureExtractor: IFeatureExtractor):Closeable {
