@@ -18,6 +18,7 @@ private const val LABEL_FILE = "labels.txt"
 class SceneClassifier(private val featureExtractor: IFeatureExtractor):Closeable {
     private val labels: List<String>
     private val inference: TensorFlowInferenceInterface
+    private var isClosed = false
     init {
         val manager = App.context.assets
         inference = TensorFlowInferenceInterface(manager, MODEL_FILE)
@@ -25,7 +26,10 @@ class SceneClassifier(private val featureExtractor: IFeatureExtractor):Closeable
         labels = manager.open(LABEL_FILE).use { t -> readLabels(t.reader().readLines())}
     }
     override fun close() {
-        inference.close()
+        synchronized(isClosed, {
+            isClosed = true
+            inference.close()})
+
     }
 
     companion object {
@@ -35,7 +39,13 @@ class SceneClassifier(private val featureExtractor: IFeatureExtractor):Closeable
     }
 
 
-    fun getCurrentClassification(): List<ClassificationResult>{
+    fun getCurrentClassification(): List<ClassificationResult> =
+            synchronized(isClosed, { classify()})
+
+    private fun classify(): List<ClassificationResult> {
+        if(isClosed){
+            return emptyList()
+        }
         val inputs = featureExtractor.receiveFeaturesForTimeSpan()
         inference.feed(INPUT_TENSOR_NAME, inputs.toFloatArray(), 1, SAMPLE_LENGHT)
         inference.run(arrayOf(OUTPUT_TENSOR_NAME))
@@ -45,11 +55,12 @@ class SceneClassifier(private val featureExtractor: IFeatureExtractor):Closeable
     }
 }
 
+
+
 private fun readLabels(input: List<String>): List<String>{
     val output = MutableList(input.size, {_ -> ""})
     input.map { t -> t.split(',') }
             .map { a -> Pair(a[0].toInt(), a[1])}
             .map { b -> output[b.first] = b.second }
     return output.toList()
-
 }
