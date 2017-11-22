@@ -11,7 +11,9 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.app.FragmentActivity
 import android.support.v4.content.ContextCompat
 import android.util.Log
+import android.widget.Toast
 import com.exaltead.sceneclassifier.R
+import com.exaltead.sceneclassifier.classification.AUDIO_SOUCE_TYPE
 import com.exaltead.sceneclassifier.classification.ClassifiationService
 import com.exaltead.sceneclassifier.classification.ClassifierServiceConncetion
 
@@ -26,17 +28,17 @@ class MainActivity : FragmentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        startInfoFragment(this)
+        supportFragmentManager.beginTransaction()
+                .add(R.id.fragment_container, SelectionFragment())
+                .commit()
         viewModel = ViewModelProviders.of(this).get(ClassificationViewModel::class.java)
     }
 
     override fun onStart() {
         super.onStart()
-        if(checkAndRequestPermission()){
-            attemptBindClassificationService(this, connection)
-        }
+        checkAndRequestPermission()
+        //attemptBindClassificationService(this, connection)
         // SHOW ERROR DIALOG / FRAGMENT
-
     }
 
     override fun onStop() {
@@ -51,7 +53,7 @@ class MainActivity : FragmentActivity() {
         if(requestCode == RECORD_AUDIO_CODE && grantResults.size == 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
             Log.i(TAG, "Permission granted")
-            attemptBindClassificationService(this, connection)
+            //attemptBindClassificationService(this, connection)
         }
         else{
             Log.w(TAG, "Permission not granted")
@@ -75,28 +77,40 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    fun getClassificationService(): ClassifiationService?{
+    private fun getClassificationService(): ClassifiationService?{
         return connection.binder?.service
     }
 
     fun notifyServiceReady(){
         getClassificationService()?.viewModel = viewModel
-        startClassificationFragment(this)
+        displaySelection()
     }
-    private fun attemptBindClassificationService(activity: Activity, connection: ClassifierServiceConncetion){
+
+    fun selectAudioSouce(audioSource: Int){
+        attemptBindClassificationService(this, connection, audioSource)
+    }
+
+    private fun attemptBindClassificationService(activity: Activity,
+                                                 connection: ClassifierServiceConncetion,
+                                                 audioSouceType: Int){
         infoText = resources.getString(R.string.binding_service)
-        when (activity.bindService(Intent(activity, ClassifiationService::class.java), connection, Context.BIND_AUTO_CREATE)){
+        Toast.makeText(this, infoText, Toast.LENGTH_SHORT).show()
+        val intent = Intent(activity, ClassifiationService::class.java)
+        intent.putExtra(AUDIO_SOUCE_TYPE, audioSouceType)
+        when (activity.bindService(intent, connection, Context.BIND_AUTO_CREATE)){
             true -> Log.i(TAG, "Service successfully bound")
             false -> Log.i(TAG, "Binding service failed")
         }
     }
+
+    private fun displaySelection(){
+        supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, ClassificationFragment())
+                .addToBackStack(null)
+                .commit()
+    }
 }
 
-private fun startClassificationFragment(activity: FragmentActivity){
-    activity.supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, ClassificationFragment())
-            .commit()
-}
 private fun startInfoFragment(activity: FragmentActivity){
     activity.supportFragmentManager.beginTransaction()
             .add(R.id.fragment_container, InformationFragment())

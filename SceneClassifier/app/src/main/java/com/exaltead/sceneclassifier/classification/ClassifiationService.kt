@@ -12,6 +12,10 @@ import com.exaltead.sceneclassifier.data_extraction.MicrophoneRecorder
 import com.exaltead.sceneclassifier.ui.ClassificationViewModel
 import java.util.*
 
+
+const val AUDIO_SOUCE_TYPE = "AUDIO_SOURCE"
+const val AUDIO_SOURCE_REALTIME = 1
+const val AUDIO_SOUCE_FILE = 2
 data class ClassificationResult(val label: String, val result: Double)
 class ClassifierBinder(val service: ClassifiationService): Binder()
 
