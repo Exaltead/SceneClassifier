@@ -24,10 +24,26 @@ class ClassificationFragment: Fragment() {
         adapter = ClassificationAdapter(this.context, R.layout.classification_view)
         view.classifications.adapter = adapter
         viewModel.data.observe(this, Observer {t -> updateListing(t)} )
+        startListUpdate()
         return view
+    }
+
+    override fun onPause() {
+        super.onPause()
+        endListUpdate()
     }
 
     private fun updateListing(newListing: List<ClassificationResult>?){
         adapter.setContentAndNotify(newListing)
+    }
+
+    private fun startListUpdate(){
+        val parent = activity as MainActivity
+        parent.startClassification()
+    }
+
+    private fun endListUpdate(){
+        val parent = activity as MainActivity
+        parent.endClassification()
     }
 }

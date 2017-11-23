@@ -46,7 +46,6 @@ class MainActivity : FragmentActivity() {
 
     override fun onStop() {
         super.onStop()
-        getClassificationService()?.releaseResources()
         unbindClassificationService()
     }
 
@@ -82,9 +81,27 @@ class MainActivity : FragmentActivity() {
 
     fun selectAudioSource(audioSource: AUDIO_SOURCE_TYPE){
         souceSelection = audioSource
+        displaySelection()
+
+    }
+
+    fun startClassification(){
         if(isBound){
+            Log.i(TAG, "Allocating resources for classification")
             getClassificationService()?.activateFromInput(souceSelection, viewModel)
-            displaySelection()
+        }
+        else{
+            Log.w(TAG, "Started classification when service is not bound")
+        }
+    }
+
+    fun endClassification(){
+        if(isBound){
+            Log.i(TAG, "Releasing resources of the classification")
+            getClassificationService()?.releaseResources()
+        }
+        else{
+            Log.w(TAG, "Tried to  release resources of unbound service")
         }
     }
 

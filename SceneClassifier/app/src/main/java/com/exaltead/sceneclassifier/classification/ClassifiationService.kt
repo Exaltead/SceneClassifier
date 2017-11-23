@@ -70,6 +70,7 @@ class ClassifiationService : Service(){
             // TODO: Release file resources
         }
         viewModel = null
+        inputType = AUDIO_SOURCE_TYPE.NOT_CHOSEN
     }
 
     private fun allocateResourcesForRealtime(){
