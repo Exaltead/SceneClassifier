@@ -6,9 +6,9 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import com.exaltead.sceneclassifier.extraction.IAudioRecorder
-import com.exaltead.sceneclassifier.extraction.IFeatureExtractor
 import com.exaltead.sceneclassifier.extraction.MfccFeatureExtractor
 import com.exaltead.sceneclassifier.extraction.MicrophoneRecorder
+import com.exaltead.sceneclassifier.extraction.WavRecorder
 import com.exaltead.sceneclassifier.ui.ClassificationViewModel
 import java.util.*
 
@@ -50,7 +50,7 @@ class ClassifiationService : Service(){
         viewModel = targetViewModel
         when(source){
             AUDIO_SOURCE_TYPE.REAL_TIME -> allocateResourcesForRealtime()
-            AUDIO_SOURCE_TYPE.FILE -> TODO()
+            AUDIO_SOURCE_TYPE.FILE -> allocateResourcesForFile()
             AUDIO_SOURCE_TYPE.NOT_CHOSEN -> TODO()
         }
         timer = Timer()
@@ -62,23 +62,25 @@ class ClassifiationService : Service(){
             return
         }
         timer.cancel()
-        if(inputType == AUDIO_SOURCE_TYPE.REAL_TIME){
-            audioRecorder.release()
-            classifier.close()
-        }
-        else{
-            // TODO: Release file resources
-        }
+        audioRecorder.release()
+        classifier.close()
         viewModel = null
         inputType = AUDIO_SOURCE_TYPE.NOT_CHOSEN
     }
 
     private fun allocateResourcesForRealtime(){
-
         audioRecorder = MicrophoneRecorder()
-        val extractor: IFeatureExtractor = MfccFeatureExtractor(audioRecorder)
+        val extractor = MfccFeatureExtractor(audioRecorder)
         classifier = SceneClassifier(extractor)
     }
+
+    private fun allocateResourcesForFile(){
+        audioRecorder = WavRecorder()
+        val extractor = MfccFeatureExtractor(audioRecorder)
+        classifier = SceneClassifier(extractor)
+    }
+
+
 
     fun updateStatistics(){
         viewModel?.data?.postValue(classifier.getCurrentClassification())

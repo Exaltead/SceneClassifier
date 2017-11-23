@@ -18,6 +18,7 @@ import com.exaltead.sceneclassifier.classification.ClassifierServiceConncetion
 
 private const val TAG = "MainActivity"
 private const val RECORD_AUDIO_CODE = 300
+private const val READ_STORAGE_PERMISSION = 400
 
 class MainActivity : FragmentActivity() {
 
@@ -39,7 +40,6 @@ class MainActivity : FragmentActivity() {
 
     override fun onStart() {
         super.onStart()
-        checkAndRequestPermission()
         bindClassificationService()
         // SHOW ERROR DIALOG / FRAGMENT
     }
@@ -53,22 +53,27 @@ class MainActivity : FragmentActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if(requestCode == RECORD_AUDIO_CODE && grantResults.size == 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-            Log.i(TAG, "Permission granted")
+            Log.i(TAG, "Permission granted for audio")
+            displaySelection()
+        }
+        else if (requestCode == READ_STORAGE_PERMISSION && grantResults.size == 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+            Log.i(TAG, "Permission granted for storage reading")
+            displaySelection()
         }
         else{
             Log.w(TAG, "Permission not granted")
-            infoText = resources.getString(R.string.missing_permission)
         }
     }
 
-    private fun checkAndRequestPermission():Boolean{
-        return if(ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+    private fun checkAndRequestPermission(permission:String, code: Int):Boolean{
+        return if(ContextCompat.checkSelfPermission(this, permission)
                 != PackageManager.PERMISSION_GRANTED){
             Log.i(TAG, "Permission is not yet granted")
 
             // TODO: show rationale: https://developer.android.com/training/permissions/requesting.html
             ActivityCompat.requestPermissions(this, Array(1,
-                    { _ -> Manifest.permission.RECORD_AUDIO}), RECORD_AUDIO_CODE)
+                    { _ -> permission}), code)
             false
         }
         else{
@@ -81,6 +86,14 @@ class MainActivity : FragmentActivity() {
 
     fun selectAudioSource(audioSource: AUDIO_SOURCE_TYPE){
         souceSelection = audioSource
+        if(audioSource == AUDIO_SOURCE_TYPE.REAL_TIME &&
+                !checkAndRequestPermission(Manifest.permission.RECORD_AUDIO, RECORD_AUDIO_CODE)){
+            return
+        }
+        else if(audioSource == AUDIO_SOURCE_TYPE.FILE &&
+                !checkAndRequestPermission(Manifest.permission.READ_EXTERNAL_STORAGE, READ_STORAGE_PERMISSION)){
+            return
+        }
         displaySelection()
 
     }

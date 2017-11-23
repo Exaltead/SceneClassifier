@@ -1,16 +1,17 @@
 package com.exaltead.sceneclassifier.extraction
 
+import android.os.Environment
 import java.io.File
 import java.io.FileInputStream
 
-// We use static filename
-const val FILENAME = "/mnt/sd_card/monofied.wav"
 
-class WawRecorder : IAudioRecorder {
+class WavRecorder : IAudioRecorder {
+    //TODO: Use filepicker
+    val filename = Environment.getExternalStorageDirectory().absolutePath + "/monofied.wav"
     override fun release() {
     }
 
-    private val samples = readMonoWavData(FILENAME)
+    private val samples = readMonoWavData(filename)
     private var current = 0
     private var samplingRate = 44100
 
@@ -23,8 +24,10 @@ class WawRecorder : IAudioRecorder {
             current = end
             return  result
         }
+
+        val result = FloatArray(reqSamples, {i -> samples[current + i]})
         current += reqSamples
-        return FloatArray(reqSamples, {i -> samples[current + i]})
+        return result
     }
 }
 
