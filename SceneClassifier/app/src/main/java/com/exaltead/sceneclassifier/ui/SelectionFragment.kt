@@ -6,8 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.exaltead.sceneclassifier.R
-import com.exaltead.sceneclassifier.classification.AUDIO_SOUCE_FILE
-import com.exaltead.sceneclassifier.classification.AUDIO_SOURCE_REALTIME
+import com.exaltead.sceneclassifier.classification.AUDIO_SOURCE_TYPE
 import kotlinx.android.synthetic.main.selection_fragment.view.*
 
 
@@ -21,12 +20,12 @@ class SelectionFragment : Fragment(){
 
     private fun testButtonClicked(){
         val parent = activity as MainActivity
-        parent.selectAudioSouce(AUDIO_SOUCE_FILE)
+        parent.selectAudioSource(AUDIO_SOURCE_TYPE.FILE)
     }
 
     private fun realtimeButtonClicked(){
         val parent = activity as MainActivity
-        parent.selectAudioSouce(AUDIO_SOURCE_REALTIME)
+        parent.selectAudioSource(AUDIO_SOURCE_TYPE.REAL_TIME)
     }
 
 }

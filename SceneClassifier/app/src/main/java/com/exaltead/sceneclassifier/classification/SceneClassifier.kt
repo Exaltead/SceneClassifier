@@ -1,6 +1,6 @@
 package com.exaltead.sceneclassifier.classification
 
-import com.exaltead.sceneclassifier.data_extraction.IFeatureExtractor
+import com.exaltead.sceneclassifier.extraction.IFeatureExtractor
 import com.exaltead.sceneclassifier.ui.App
 import org.tensorflow.contrib.android.TensorFlowInferenceInterface
 import java.io.Closeable

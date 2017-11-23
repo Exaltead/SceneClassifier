@@ -1,4 +1,4 @@
-package com.exaltead.sceneclassifier.data_extraction
+package com.exaltead.sceneclassifier.extraction
 
 import java.io.File
 import java.io.FileInputStream
@@ -7,18 +7,12 @@ import java.io.FileInputStream
 const val FILENAME = "/mnt/sd_card/monofied.wav"
 
 class WawRecorder : IAudioRecorder {
+    override fun release() {
+    }
+
     private val samples = readMonoWavData(FILENAME)
     private var current = 0
     private var samplingRate = 44100
-    init {
-
-
-    }
-    override fun start() {
-    }
-
-    override fun stop() {
-    }
 
     override fun takeAudioRecord(duration: Double): FloatArray {
         val reqSamples =(duration * samplingRate).toInt()

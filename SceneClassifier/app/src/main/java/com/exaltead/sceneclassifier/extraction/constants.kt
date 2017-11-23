@@ -1,4 +1,4 @@
-package com.exaltead.sceneclassifier.data_extraction
+package com.exaltead.sceneclassifier.extraction
 
 import android.media.AudioFormat
 import android.media.AudioFormat.CHANNEL_IN_MONO

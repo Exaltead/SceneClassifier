@@ -1,7 +1,6 @@
 package com.exaltead.sceneclassifier.ui
 
 import android.Manifest
-import android.app.Activity
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.Intent
@@ -13,7 +12,7 @@ import android.support.v4.content.ContextCompat
 import android.util.Log
 import android.widget.Toast
 import com.exaltead.sceneclassifier.R
-import com.exaltead.sceneclassifier.classification.AUDIO_SOUCE_TYPE
+import com.exaltead.sceneclassifier.classification.AUDIO_SOURCE_TYPE
 import com.exaltead.sceneclassifier.classification.ClassifiationService
 import com.exaltead.sceneclassifier.classification.ClassifierServiceConncetion
 
@@ -25,6 +24,9 @@ class MainActivity : FragmentActivity() {
     private val connection: ClassifierServiceConncetion = ClassifierServiceConncetion(this)
     private lateinit var viewModel: ClassificationViewModel
     var infoText = ""
+    private lateinit var souceSelection: AUDIO_SOURCE_TYPE
+    private var isBound = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -32,20 +34,20 @@ class MainActivity : FragmentActivity() {
                 .add(R.id.fragment_container, SelectionFragment())
                 .commit()
         viewModel = ViewModelProviders.of(this).get(ClassificationViewModel::class.java)
+
     }
 
     override fun onStart() {
         super.onStart()
         checkAndRequestPermission()
-        //attemptBindClassificationService(this, connection)
+        bindClassificationService()
         // SHOW ERROR DIALOG / FRAGMENT
     }
 
     override fun onStop() {
         super.onStop()
-        if(connection.binder != null){
-            unbindService(connection)
-        }
+        getClassificationService()?.releaseResources()
+        unbindClassificationService()
     }
 
 
@@ -53,7 +55,6 @@ class MainActivity : FragmentActivity() {
         if(requestCode == RECORD_AUDIO_CODE && grantResults.size == 1
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
             Log.i(TAG, "Permission granted")
-            //attemptBindClassificationService(this, connection)
         }
         else{
             Log.w(TAG, "Permission not granted")
@@ -77,29 +78,28 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    private fun getClassificationService(): ClassifiationService?{
-        return connection.binder?.service
+    private fun getClassificationService(): ClassifiationService? = connection.binder?.service
+
+    fun selectAudioSource(audioSource: AUDIO_SOURCE_TYPE){
+        souceSelection = audioSource
+        if(isBound){
+            getClassificationService()?.activateFromInput(souceSelection, viewModel)
+            displaySelection()
+        }
     }
 
-    fun notifyServiceReady(){
-        getClassificationService()?.viewModel = viewModel
-        displaySelection()
+    private fun bindClassificationService(){
+        Toast.makeText(this, resources.getString(R.string.binding_service),
+                Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, ClassifiationService::class.java)
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        isBound = true
     }
 
-    fun selectAudioSouce(audioSource: Int){
-        attemptBindClassificationService(this, connection, audioSource)
-    }
-
-    private fun attemptBindClassificationService(activity: Activity,
-                                                 connection: ClassifierServiceConncetion,
-                                                 audioSouceType: Int){
-        infoText = resources.getString(R.string.binding_service)
-        Toast.makeText(this, infoText, Toast.LENGTH_SHORT).show()
-        val intent = Intent(activity, ClassifiationService::class.java)
-        intent.putExtra(AUDIO_SOUCE_TYPE, audioSouceType)
-        when (activity.bindService(intent, connection, Context.BIND_AUTO_CREATE)){
-            true -> Log.i(TAG, "Service successfully bound")
-            false -> Log.i(TAG, "Binding service failed")
+    private fun unbindClassificationService(){
+        if(isBound){
+            unbindService(connection)
+            isBound = false
         }
     }
 
@@ -111,9 +111,4 @@ class MainActivity : FragmentActivity() {
     }
 }
 
-private fun startInfoFragment(activity: FragmentActivity){
-    activity.supportFragmentManager.beginTransaction()
-            .add(R.id.fragment_container, InformationFragment())
-            .commit()
-}
 

@@ -1,4 +1,4 @@
-package com.exaltead.sceneclassifier.data_extraction
+package com.exaltead.sceneclassifier.extraction
 interface IFeatureExtractor{
     fun receiveFeaturesForTimeSpan(): Array<Float>
 }

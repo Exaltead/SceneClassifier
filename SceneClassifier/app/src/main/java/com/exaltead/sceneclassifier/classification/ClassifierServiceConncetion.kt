@@ -20,7 +20,6 @@ class ClassifierServiceConncetion(val activity: MainActivity) : ServiceConnectio
         if(p1 is ClassifierBinder){
             Log.i(TAG, "Service connected")
             binder = p1
-            activity.notifyServiceReady()
         }
         else{
             Log.i(TAG, "Service attempted to connect")
